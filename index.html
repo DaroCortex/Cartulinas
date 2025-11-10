@@ -12,9 +12,9 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            color: white;
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            background: #0f1419;
+            color: #e8eaed;
             min-height: 100vh;
             padding: 20px;
         }
@@ -26,42 +26,45 @@
 
         header {
             text-align: center;
-            padding: 20px 0;
+            padding: 25px 0;
             margin-bottom: 30px;
-            background: linear-gradient(135deg, #FF1493 0%, #FF69B4 100%);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(255, 20, 147, 0.3);
+            background: #1a1f26;
+            border-radius: 8px;
+            border-bottom: 3px solid #2a5a7a;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
         h1 {
-            font-size: 2.5em;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            letter-spacing: 2px;
+            font-size: 2.2em;
+            color: #ffffff;
+            letter-spacing: 1px;
+            font-weight: 600;
         }
 
         .subtitle {
-            font-size: 1.2em;
-            margin-top: 10px;
-            opacity: 0.9;
+            font-size: 1em;
+            margin-top: 8px;
+            color: #9aa0a6;
+            font-weight: 400;
         }
 
         .main-content {
             display: grid;
             grid-template-columns: 1fr 400px;
-            gap: 30px;
+            gap: 25px;
         }
 
         .video-section {
-            background: #2b2b2b;
-            border-radius: 15px;
+            background: #1a1f26;
+            border-radius: 8px;
             padding: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
         .video-container {
             position: relative;
-            background: black;
-            border-radius: 10px;
+            background: #000;
+            border-radius: 6px;
             overflow: hidden;
             margin-bottom: 20px;
         }
@@ -83,17 +86,17 @@
             transform: translate(-50%, -50%);
             width: 100px;
             height: 100px;
-            border: 3px solid #00ff00;
+            border: 2px solid #4a9eff;
             border-radius: 50%;
             pointer-events: none;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            box-shadow: 0 0 15px rgba(74, 158, 255, 0.4);
         }
 
         .crosshair::before,
         .crosshair::after {
             content: '';
             position: absolute;
-            background: #00ff00;
+            background: #4a9eff;
         }
 
         .crosshair::before {
@@ -113,83 +116,88 @@
         }
 
         .controls {
-            background: #1a1a1a;
+            background: #141a1f;
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 6px;
             text-align: center;
         }
 
         .instructions {
-            background: #333;
+            background: #1a1f26;
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 6px;
             margin-bottom: 15px;
-            border-left: 4px solid #00ff00;
+            border-left: 3px solid #4a9eff;
         }
 
         .instructions p {
-            margin: 8px 0;
-            font-size: 0.95em;
+            margin: 6px 0;
+            font-size: 0.9em;
+            color: #9aa0a6;
         }
 
         .instructions strong {
-            color: #00ff00;
+            color: #4a9eff;
         }
 
         #colorDisplay {
-            font-size: 1.8em;
-            font-weight: bold;
+            font-size: 1.6em;
+            font-weight: 500;
             padding: 15px;
-            background: #333;
-            border-radius: 10px;
+            background: #1a1f26;
+            border-radius: 6px;
             margin: 15px 0;
             min-height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 3px solid #444;
+            border: 1px solid #2a5a7a;
         }
 
         #statusMessage {
-            font-size: 1.2em;
+            font-size: 1.1em;
             padding: 10px;
-            border-radius: 8px;
+            border-radius: 6px;
             margin: 10px 0;
             min-height: 40px;
+            color: #9aa0a6;
         }
 
         .status-recording {
-            background: #ff4444;
+            background: #5f2120;
+            color: #ff6b6b;
             animation: pulse 1s infinite;
         }
 
         .status-success {
-            background: #00aa00;
+            background: #1e3a20;
+            color: #4caf50;
         }
 
         @keyframes pulse {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
+            50% { opacity: 0.7; }
         }
 
         .btn {
-            background: linear-gradient(135deg, #FF1493 0%, #FF69B4 100%);
+            background: #2a5a7a;
             color: white;
             border: none;
-            padding: 15px 30px;
-            font-size: 1.1em;
-            border-radius: 8px;
+            padding: 14px 28px;
+            font-size: 1em;
+            border-radius: 6px;
             cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
+            font-weight: 500;
+            transition: all 0.2s;
             width: 100%;
-            margin: 10px 0;
-            box-shadow: 0 5px 15px rgba(255, 20, 147, 0.3);
+            margin: 8px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(255, 20, 147, 0.5);
+            background: #3a7a9a;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
         .btn:active {
@@ -197,140 +205,143 @@
         }
 
         .sidebar {
-            background: #2b2b2b;
-            border-radius: 15px;
+            background: #1a1f26;
+            border-radius: 8px;
             padding: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
         .sidebar h2 {
             text-align: center;
-            margin-bottom: 20px;
-            color: #FF1493;
-            font-size: 1.8em;
+            margin-bottom: 18px;
+            color: #ffffff;
+            font-size: 1.4em;
+            font-weight: 600;
         }
 
         .stats {
-            background: #1a1a1a;
+            background: #141a1f;
             padding: 15px;
-            border-radius: 10px;
+            border-radius: 6px;
             margin-bottom: 20px;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 12px;
         }
 
         .stat-box {
             text-align: center;
             padding: 15px;
-            border-radius: 8px;
-            background: #333;
+            border-radius: 6px;
+            background: #1a1f26;
         }
 
         .stat-value {
-            font-size: 2.5em;
-            font-weight: bold;
+            font-size: 2.2em;
+            font-weight: 600;
             margin-bottom: 5px;
         }
 
         .stat-label {
-            font-size: 0.9em;
-            opacity: 0.8;
+            font-size: 0.85em;
+            color: #9aa0a6;
         }
 
         .stat-aciertos .stat-value {
-            color: #00ff00;
+            color: #4caf50;
         }
 
         .stat-errores .stat-value {
-            color: #ff4444;
+            color: #ff6b6b;
         }
 
         .historial {
-            background: #1a1a1a;
-            border-radius: 10px;
-            padding: 15px;
+            background: #141a1f;
+            border-radius: 6px;
+            padding: 12px;
             max-height: 400px;
             overflow-y: auto;
         }
 
         .historial-item {
             padding: 12px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            background: #333;
-            border-left: 4px solid;
-            transition: all 0.2s;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            background: #1a1f26;
+            border-left: 3px solid;
+            transition: all 0.15s;
         }
 
         .historial-item:hover {
-            background: #3a3a3a;
-            transform: translateX(5px);
+            background: #202830;
+            transform: translateX(3px);
         }
 
         .historial-item.acierto {
-            border-left-color: #00ff00;
+            border-left-color: #4caf50;
         }
 
         .historial-item.error {
-            border-left-color: #ff4444;
+            border-left-color: #ff6b6b;
         }
 
         .historial-item .time {
-            font-size: 0.85em;
-            opacity: 0.7;
-            margin-bottom: 5px;
+            font-size: 0.8em;
+            color: #6c7a89;
+            margin-bottom: 4px;
         }
 
         .historial-item .color {
-            font-weight: bold;
-            font-size: 1.1em;
+            font-weight: 500;
+            font-size: 1em;
+            color: #e8eaed;
         }
 
         .historial-item .resultado {
-            font-size: 0.9em;
-            margin-top: 5px;
+            font-size: 0.85em;
+            margin-top: 4px;
+            color: #9aa0a6;
         }
 
         .historial::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
 
         .historial::-webkit-scrollbar-track {
-            background: #2b2b2b;
-            border-radius: 10px;
+            background: #0f1419;
+            border-radius: 6px;
         }
 
         .historial::-webkit-scrollbar-thumb {
-            background: #FF1493;
-            border-radius: 10px;
+            background: #2a5a7a;
+            border-radius: 6px;
         }
 
         .capturas-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 20px;
+            gap: 8px;
+            margin-top: 15px;
         }
 
         .captura-mini {
             aspect-ratio: 4/3;
-            border-radius: 8px;
+            border-radius: 6px;
             overflow: hidden;
-            border: 3px solid;
-            transition: transform 0.2s;
+            border: 2px solid;
+            transition: transform 0.15s;
         }
 
         .captura-mini:hover {
-            transform: scale(1.05);
+            transform: scale(1.03);
         }
 
         .captura-mini.acierto {
-            border-color: #00ff00;
+            border-color: #4caf50;
         }
 
         .captura-mini.error {
-            border-color: #ff4444;
+            border-color: #ff6b6b;
         }
 
         .captura-mini img {
@@ -339,73 +350,85 @@
             object-fit: cover;
         }
 
-        #modalConfirm {
+        .modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.85);
             z-index: 1000;
             justify-content: center;
             align-items: center;
         }
 
         .modal-content {
-            background: #2b2b2b;
-            padding: 40px;
-            border-radius: 15px;
+            background: #1a1f26;
+            padding: 35px;
+            border-radius: 8px;
             text-align: center;
             max-width: 500px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            border: 1px solid #2a5a7a;
         }
 
         .modal-content h2 {
-            color: #FF1493;
+            color: #ffffff;
             margin-bottom: 20px;
-            font-size: 2em;
+            font-size: 1.8em;
+            font-weight: 600;
         }
 
         .modal-content p {
-            font-size: 1.3em;
-            margin-bottom: 30px;
+            font-size: 1.2em;
+            margin-bottom: 25px;
+            color: #9aa0a6;
         }
 
         .modal-buttons {
             display: flex;
-            gap: 15px;
+            gap: 12px;
         }
 
         .modal-buttons button {
             flex: 1;
-            padding: 15px;
-            font-size: 1.2em;
+            padding: 14px;
+            font-size: 1.1em;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
+            font-weight: 500;
+            transition: all 0.2s;
         }
 
         .btn-yes {
-            background: #00aa00;
+            background: #2e7d32;
             color: white;
         }
 
         .btn-yes:hover {
-            background: #00cc00;
-            transform: scale(1.05);
+            background: #388e3c;
+            transform: scale(1.02);
         }
 
         .btn-no {
-            background: #cc0000;
+            background: #c62828;
             color: white;
         }
 
         .btn-no:hover {
-            background: #ff0000;
-            transform: scale(1.05);
+            background: #d32f2f;
+            transform: scale(1.02);
+        }
+
+        .btn-primary {
+            background: #2a5a7a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a7a9a;
         }
 
         @media (max-width: 1200px) {
@@ -414,29 +437,34 @@
             }
         }
 
-        .loading {
-            text-align: center;
-            padding: 40px;
-            font-size: 1.2em;
-        }
-
         .color-preview {
             width: 60px;
             height: 60px;
             border-radius: 50%;
             display: inline-block;
             margin-right: 15px;
-            border: 3px solid white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            border: 2px solid #2a5a7a;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
             vertical-align: middle;
+        }
+
+        .permission-icons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 25px 0;
+        }
+
+        .permission-icon {
+            font-size: 3em;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🎨 ACADEMIA CORTEX</h1>
-            <p class="subtitle">Detector de Colores con Webcam</p>
+            <h1>ACADEMIA CORTEX</h1>
+            <p class="subtitle">Detector de Colores Profesional</p>
         </header>
 
         <div class="main-content">
@@ -449,9 +477,9 @@
 
                 <div class="controls">
                     <div class="instructions">
-                        <p><strong>ESPACIO</strong> - Detectar color</p>
-                        <p><strong>ESPACIO x3</strong> - Grabar audio 10 segundos</p>
-                        <p>Centra el objeto en el círculo verde</p>
+                        <p><strong>ESPACIO</strong> - Detectar color (voz automática)</p>
+                        <p><strong>ESPACIO x3</strong> - Grabar audio 5 segundos</p>
+                        <p>Centra el objeto en el círculo azul</p>
                     </div>
 
                     <div id="colorDisplay">
@@ -461,17 +489,17 @@
                     <div id="statusMessage"></div>
 
                     <button class="btn" onclick="detectarColor()">
-                        🎯 DETECTAR COLOR (ESPACIO)
+                        🎯 DETECTAR COLOR
                     </button>
 
                     <button class="btn" onclick="generarReporte()">
-                        📸 GENERAR REPORTE INSTAGRAM
+                        📊 GENERAR REPORTE
                     </button>
                 </div>
             </div>
 
             <div class="sidebar">
-                <h2>📊 Estadísticas</h2>
+                <h2>Estadísticas</h2>
 
                 <div class="stats">
                     <div class="stat-box stat-aciertos">
@@ -484,20 +512,36 @@
                     </div>
                 </div>
 
-                <h2>📋 Historial</h2>
+                <h2>Historial</h2>
                 <div class="historial" id="historialContainer">
-                    <p style="text-align: center; opacity: 0.5;">No hay detecciones aún</p>
+                    <p style="text-align: center; color: #6c7a89;">No hay detecciones aún</p>
                 </div>
 
-                <h2>🖼️ Capturas Recientes</h2>
+                <h2>Capturas Recientes</h2>
                 <div class="capturas-grid" id="capturasGrid">
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Modal de permisos inicial -->
+    <div id="modalPermisos" class="modal" style="display: flex;">
+        <div class="modal-content">
+            <h2>Bienvenido</h2>
+            <p>Para usar el detector necesitamos acceso a:</p>
+            <div class="permission-icons">
+                <div>📹 Cámara</div>
+                <div>🎤 Micrófono</div>
+            </div>
+            <p style="font-size: 0.9em; color: #6c7a89;">Los permisos se solicitarán en el siguiente paso</p>
+            <button class="btn btn-primary" onclick="solicitarPermisos()" style="width: 100%; margin-top: 10px;">
+                Continuar
+            </button>
+        </div>
+    </div>
+
     <!-- Modal de confirmación -->
-    <div id="modalConfirm">
+    <div id="modalConfirm" class="modal">
         <div class="modal-content">
             <h2>¿Es correcto?</h2>
             <p>Color detectado: <strong id="modalColorName"></strong></p>
@@ -522,6 +566,8 @@
         let mediaRecorder;
         let audioChunks = [];
         let currentDetection = null;
+        let audioStream = null;
+        let permisosOtorgados = false;
 
         // Colores conocidos en RGB
         const coloresConocidos = {
@@ -545,32 +591,45 @@
             canvas = document.getElementById('canvas');
             ctx = canvas.getContext('2d');
 
-            // Iniciar webcam
-            iniciarWebcam();
-
             // Event listeners
             document.addEventListener('keydown', handleKeyPress);
         };
 
-        async function iniciarWebcam() {
+        async function solicitarPermisos() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({
+                // Solicitar cámara y micrófono juntos
+                const videoStream = await navigator.mediaDevices.getUserMedia({
                     video: {
                         width: { ideal: 1280 },
                         height: { ideal: 720 }
                     },
                     audio: false
                 });
-                video.srcObject = stream;
+
+                audioStream = await navigator.mediaDevices.getUserMedia({
+                    audio: true
+                });
+
+                video.srcObject = videoStream;
+                permisosOtorgados = true;
+
+                // Cerrar modal
+                document.getElementById('modalPermisos').style.display = 'none';
+
             } catch (err) {
-                console.error('Error al acceder a la webcam:', err);
-                alert('Error: No se puede acceder a la webcam. Por favor, permite el acceso.');
+                console.error('Error al solicitar permisos:', err);
+                alert('Error: Necesitamos acceso a la cámara y micrófono para funcionar. Por favor, permite el acceso y recarga la página.');
             }
         }
 
         function handleKeyPress(e) {
             if (e.code === 'Space') {
                 e.preventDefault();
+
+                if (!permisosOtorgados) {
+                    alert('Por favor, otorga los permisos primero.');
+                    return;
+                }
 
                 const now = Date.now();
                 clickTimes.push(now);
@@ -621,6 +680,9 @@
             const colorDetectado = identificarColor(r, g, b);
             const hexColor = rgbToHex(r, g, b);
 
+            // DECIR EL COLOR EN VOZ ALTA
+            decirColorEnVozAlta(colorDetectado);
+
             // Capturar miniatura
             const thumbnail = capturarMiniatura();
 
@@ -630,11 +692,27 @@
                 hex: hexColor,
                 rgb: { r, g, b },
                 thumbnail: thumbnail,
-                timestamp: new Date()
+                timestamp: new Date(),
+                audio: null
             };
 
             // Mostrar modal de confirmación
             mostrarModalConfirmacion(colorDetectado, hexColor);
+        }
+
+        function decirColorEnVozAlta(color) {
+            if ('speechSynthesis' in window) {
+                // Cancelar cualquier voz anterior
+                window.speechSynthesis.cancel();
+
+                const utterance = new SpeechSynthesisUtterance(color);
+                utterance.lang = 'es-ES';
+                utterance.rate = 0.9;
+                utterance.pitch = 1;
+                utterance.volume = 1;
+
+                window.speechSynthesis.speak(utterance);
+            }
         }
 
         function identificarColor(r, g, b) {
@@ -708,7 +786,8 @@
                 hex: currentDetection.hex,
                 rgb: currentDetection.rgb,
                 resultado: resultado,
-                thumbnail: currentDetection.thumbnail
+                thumbnail: currentDetection.thumbnail,
+                audio: currentDetection.audio
             };
 
             historial.push(entrada);
@@ -720,11 +799,12 @@
             const statusDiv = document.getElementById('statusMessage');
             statusDiv.textContent = resultado === 'ACIERTO' ? '✓ Correcto!' : '✗ Error';
             statusDiv.className = resultado === 'ACIERTO' ? 'status-success' : '';
-            statusDiv.style.background = resultado === 'ACIERTO' ? '#00aa00' : '#cc0000';
+            statusDiv.style.background = resultado === 'ACIERTO' ? '#1e3a20' : '#5f2120';
 
             setTimeout(() => {
                 statusDiv.textContent = '';
                 statusDiv.style.background = '';
+                statusDiv.className = '';
             }, 2000);
 
             // Reproducir sonido
@@ -750,6 +830,7 @@
                 item.className = `historial-item ${entrada.resultado === 'ACIERTO' ? 'acierto' : 'error'}`;
 
                 const time = entrada.timestamp.toLocaleTimeString('es-ES');
+                const audioIcon = entrada.audio ? ' 🎤' : '';
                 item.innerHTML = `
                     <div class="time">${time}</div>
                     <div class="color">
@@ -761,9 +842,9 @@
                             border-radius: 50%;
                             margin-right: 8px;
                             vertical-align: middle;
-                            border: 2px solid white;
+                            border: 2px solid #2a5a7a;
                         "></span>
-                        ${entrada.color}
+                        ${entrada.color}${audioIcon}
                     </div>
                     <div class="resultado">${entrada.resultado}</div>
                 `;
@@ -786,13 +867,12 @@
         async function iniciarGrabacionAudio() {
             try {
                 const statusDiv = document.getElementById('statusMessage');
-                statusDiv.textContent = '🔴 GRABANDO AUDIO (10s)...';
+                statusDiv.textContent = '🔴 GRABANDO AUDIO (5s)...';
                 statusDiv.className = 'status-recording';
 
                 reproducirBeep(440, 0.2);
 
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder = new MediaRecorder(audioStream);
                 audioChunks = [];
 
                 mediaRecorder.ondataavailable = (event) => {
@@ -801,15 +881,25 @@
 
                 mediaRecorder.onstop = () => {
                     const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                    const audioUrl = URL.createObjectURL(audioBlob);
 
-                    // Descargar audio
-                    const a = document.createElement('a');
-                    a.href = audioUrl;
-                    a.download = `audio_${Date.now()}.wav`;
-                    a.click();
+                    // Guardar audio en la detección actual si existe
+                    if (currentDetection) {
+                        currentDetection.audio = audioBlob;
+                    } else {
+                        // Si no hay detección actual, crear una entrada solo con audio
+                        const entrada = {
+                            timestamp: new Date(),
+                            color: 'Audio grabado',
+                            hex: '#666666',
+                            rgb: { r: 102, g: 102, b: 102 },
+                            resultado: 'AUDIO',
+                            thumbnail: null,
+                            audio: audioBlob
+                        };
+                        historial.push(entrada);
+                    }
 
-                    statusDiv.textContent = '✓ Audio guardado';
+                    statusDiv.textContent = '✓ Audio guardado con la foto';
                     statusDiv.className = 'status-success';
                     reproducirBeep(880, 0.2);
 
@@ -817,15 +907,13 @@
                         statusDiv.textContent = '';
                         statusDiv.className = '';
                     }, 2000);
-
-                    stream.getTracks().forEach(track => track.stop());
                 };
 
                 mediaRecorder.start();
 
                 setTimeout(() => {
                     mediaRecorder.stop();
-                }, 10000);
+                }, 5000);
 
             } catch (err) {
                 console.error('Error al grabar audio:', err);
@@ -834,20 +922,24 @@
         }
 
         function reproducirBeep(frecuencia, duracion) {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
 
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
 
-            oscillator.frequency.value = frecuencia;
-            oscillator.type = 'sine';
+                oscillator.frequency.value = frecuencia;
+                oscillator.type = 'sine';
 
-            gainNode.gain.value = 0.3;
+                gainNode.gain.value = 0.3;
 
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + duracion);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duracion);
+            } catch (err) {
+                console.log('Error al reproducir beep:', err);
+            }
         }
 
         function generarReporte() {
@@ -872,27 +964,25 @@
             const rCtx = reportCanvas.getContext('2d');
 
             // Fondo
-            const gradient = rCtx.createLinearGradient(0, 0, 0, 1920);
-            gradient.addColorStop(0, '#1a1a1a');
-            gradient.addColorStop(1, '#2d2d2d');
-            rCtx.fillStyle = gradient;
+            rCtx.fillStyle = '#0f1419';
             rCtx.fillRect(0, 0, 1080, 1920);
 
             // Título
-            rCtx.fillStyle = '#FF1493';
-            rCtx.fillRect(0, 0, 1080, 250);
+            rCtx.fillStyle = '#1a1f26';
+            rCtx.fillRect(0, 0, 1080, 220);
 
-            rCtx.fillStyle = 'white';
-            rCtx.font = 'bold 80px Arial';
+            // Barra azul
+            rCtx.fillStyle = '#2a5a7a';
+            rCtx.fillRect(0, 220, 1080, 8);
+
+            rCtx.fillStyle = '#ffffff';
+            rCtx.font = 'bold 70px Arial';
             rCtx.textAlign = 'center';
-            rCtx.fillText('ACADEMIA CORTEX', 540, 120);
+            rCtx.fillText('ACADEMIA CORTEX', 540, 110);
 
-            rCtx.font = '40px Arial';
-            rCtx.fillText('Detector de Colores', 540, 180);
-
-            // Línea decorativa
-            rCtx.fillStyle = '#FFD700';
-            rCtx.fillRect(100, 240, 880, 10);
+            rCtx.font = '35px Arial';
+            rCtx.fillStyle = '#9aa0a6';
+            rCtx.fillText('Detector de Colores Profesional', 540, 165);
 
             // Estadísticas
             const aciertos = historial.filter(h => h.resultado === 'ACIERTO').length;
@@ -900,29 +990,30 @@
             const total = historial.length;
             const porcentajeAciertos = Math.round((aciertos / total) * 100);
 
-            rCtx.fillStyle = 'white';
-            rCtx.font = 'bold 50px Arial';
-            rCtx.fillText('ESTADÍSTICAS', 540, 340);
+            rCtx.fillStyle = '#ffffff';
+            rCtx.font = 'bold 48px Arial';
+            rCtx.fillText('ESTADÍSTICAS', 540, 320);
 
-            rCtx.font = '40px Arial';
-            rCtx.fillText(`Total de detecciones: ${total}`, 540, 420);
+            rCtx.font = '38px Arial';
+            rCtx.fillStyle = '#9aa0a6';
+            rCtx.fillText(`Total de detecciones: ${total}`, 540, 390);
 
-            rCtx.fillStyle = '#00ff00';
-            rCtx.fillText(`✓ Aciertos: ${aciertos} (${porcentajeAciertos}%)`, 540, 490);
+            rCtx.fillStyle = '#4caf50';
+            rCtx.fillText(`✓ Aciertos: ${aciertos} (${porcentajeAciertos}%)`, 540, 450);
 
-            rCtx.fillStyle = '#ff4444';
-            rCtx.fillText(`✗ Errores: ${errores} (${100-porcentajeAciertos}%)`, 540, 560);
+            rCtx.fillStyle = '#ff6b6b';
+            rCtx.fillText(`✗ Errores: ${errores} (${100-porcentajeAciertos}%)`, 540, 510);
 
             // Miniaturas
-            rCtx.fillStyle = 'white';
-            rCtx.font = 'bold 45px Arial';
-            rCtx.fillText('ÚLTIMAS DETECCIONES', 540, 670);
+            rCtx.fillStyle = '#ffffff';
+            rCtx.font = 'bold 42px Arial';
+            rCtx.fillText('ÚLTIMAS DETECCIONES', 540, 600);
 
             const thumbWidth = 240;
             const thumbHeight = 180;
             const padding = 30;
             const startX = (1080 - (3 * thumbWidth + 2 * padding)) / 2;
-            let y = 730;
+            let y = 660;
 
             const recentImages = capturas.slice(-12);
 
@@ -939,9 +1030,18 @@
                     rCtx.drawImage(img, x, yPos, thumbWidth, thumbHeight);
 
                     // Borde
-                    rCtx.strokeStyle = captura.resultado === 'ACIERTO' ? '#00ff00' : '#ff4444';
-                    rCtx.lineWidth = 6;
+                    rCtx.strokeStyle = captura.resultado === 'ACIERTO' ? '#4caf50' : '#ff6b6b';
+                    rCtx.lineWidth = 4;
                     rCtx.strokeRect(x, yPos, thumbWidth, thumbHeight);
+
+                    // Indicador de audio
+                    if (captura.audio) {
+                        rCtx.fillStyle = '#2a5a7a';
+                        rCtx.fillRect(x + thumbWidth - 35, yPos + 5, 30, 30);
+                        rCtx.fillStyle = '#ffffff';
+                        rCtx.font = '20px Arial';
+                        rCtx.fillText('🎤', x + thumbWidth - 20, yPos + 25);
+                    }
 
                     // Si es la última imagen, generar descarga
                     if (idx === recentImages.length - 1) {
@@ -955,23 +1055,23 @@
                 const now = new Date();
                 const fechaHora = now.toLocaleString('es-ES');
 
-                rCtx.fillStyle = '#FF1493';
-                rCtx.fillRect(100, 1750, 880, 5);
+                rCtx.fillStyle = '#2a5a7a';
+                rCtx.fillRect(100, 1780, 880, 3);
 
-                rCtx.fillStyle = '#888888';
-                rCtx.font = '30px Arial';
-                rCtx.fillText(`Generado: ${fechaHora}`, 540, 1810);
+                rCtx.fillStyle = '#6c7a89';
+                rCtx.font = '28px Arial';
+                rCtx.fillText(`Generado: ${fechaHora}`, 540, 1840);
 
                 // Descargar imagen
                 reportCanvas.toBlob((blob) => {
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = `reporte_instagram_${Date.now()}.jpg`;
+                    a.download = `reporte_academia_cortex_${Date.now()}.jpg`;
                     a.click();
 
                     const statusDiv = document.getElementById('statusMessage');
-                    statusDiv.textContent = '✓ Reporte descargado!';
+                    statusDiv.textContent = '✓ Reporte descargado';
                     statusDiv.className = 'status-success';
 
                     setTimeout(() => {
