@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detector de Colores - Academia Cortex</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #FF1493 0%, #FF69B4 100%);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(255, 20, 147, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+        }
+
+        .video-section {
+            background: #2b2b2b;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .video-container {
+            position: relative;
+            background: black;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        #videoElement {
+            width: 100%;
+            display: block;
+            transform: scaleX(-1);
+        }
+
+        #canvas {
+            display: none;
+        }
+
+        .crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            border: 3px solid #00ff00;
+            border-radius: 50%;
+            pointer-events: none;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+
+        .crosshair::before,
+        .crosshair::after {
+            content: '';
+            position: absolute;
+            background: #00ff00;
+        }
+
+        .crosshair::before {
+            width: 20px;
+            height: 2px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .crosshair::after {
+            width: 2px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .controls {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .instructions {
+            background: #333;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #00ff00;
+        }
+
+        .instructions p {
+            margin: 8px 0;
+            font-size: 0.95em;
+        }
+
+        .instructions strong {
+            color: #00ff00;
+        }
+
+        #colorDisplay {
+            font-size: 1.8em;
+            font-weight: bold;
+            padding: 15px;
+            background: #333;
+            border-radius: 10px;
+            margin: 15px 0;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #444;
+        }
+
+        #statusMessage {
+            font-size: 1.2em;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            min-height: 40px;
+        }
+
+        .status-recording {
+            background: #ff4444;
+            animation: pulse 1s infinite;
+        }
+
+        .status-success {
+            background: #00aa00;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #FF1493 0%, #FF69B4 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            width: 100%;
+            margin: 10px 0;
+            box-shadow: 0 5px 15px rgba(255, 20, 147, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 20, 147, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .sidebar {
+            background: #2b2b2b;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #FF1493;
+            font-size: 1.8em;
+        }
+
+        .stats {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            background: #333;
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .stat-aciertos .stat-value {
+            color: #00ff00;
+        }
+
+        .stat-errores .stat-value {
+            color: #ff4444;
+        }
+
+        .historial {
+            background: #1a1a1a;
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .historial-item {
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background: #333;
+            border-left: 4px solid;
+            transition: all 0.2s;
+        }
+
+        .historial-item:hover {
+            background: #3a3a3a;
+            transform: translateX(5px);
+        }
+
+        .historial-item.acierto {
+            border-left-color: #00ff00;
+        }
+
+        .historial-item.error {
+            border-left-color: #ff4444;
+        }
+
+        .historial-item .time {
+            font-size: 0.85em;
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+
+        .historial-item .color {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .historial-item .resultado {
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .historial::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .historial::-webkit-scrollbar-track {
+            background: #2b2b2b;
+            border-radius: 10px;
+        }
+
+        .historial::-webkit-scrollbar-thumb {
+            background: #FF1493;
+            border-radius: 10px;
+        }
+
+        .capturas-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .captura-mini {
+            aspect-ratio: 4/3;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 3px solid;
+            transition: transform 0.2s;
+        }
+
+        .captura-mini:hover {
+            transform: scale(1.05);
+        }
+
+        .captura-mini.acierto {
+            border-color: #00ff00;
+        }
+
+        .captura-mini.error {
+            border-color: #ff4444;
+        }
+
+        .captura-mini img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #modalConfirm {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #2b2b2b;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+        }
+
+        .modal-content h2 {
+            color: #FF1493;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .modal-content p {
+            font-size: 1.3em;
+            margin-bottom: 30px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 15px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-yes {
+            background: #00aa00;
+            color: white;
+        }
+
+        .btn-yes:hover {
+            background: #00cc00;
+            transform: scale(1.05);
+        }
+
+        .btn-no {
+            background: #cc0000;
+            color: white;
+        }
+
+        .btn-no:hover {
+            background: #ff0000;
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+        }
+
+        .color-preview {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 15px;
+            border: 3px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 ACADEMIA CORTEX</h1>
+            <p class="subtitle">Detector de Colores con Webcam</p>
+        </header>
+
+        <div class="main-content">
+            <div class="video-section">
+                <div class="video-container">
+                    <video id="videoElement" autoplay playsinline></video>
+                    <div class="crosshair"></div>
+                    <canvas id="canvas"></canvas>
+                </div>
+
+                <div class="controls">
+                    <div class="instructions">
+                        <p><strong>ESPACIO</strong> - Detectar color</p>
+                        <p><strong>ESPACIO x3</strong> - Grabar audio 10 segundos</p>
+                        <p>Centra el objeto en el círculo verde</p>
+                    </div>
+
+                    <div id="colorDisplay">
+                        Presiona ESPACIO para detectar
+                    </div>
+
+                    <div id="statusMessage"></div>
+
+                    <button class="btn" onclick="detectarColor()">
+                        🎯 DETECTAR COLOR (ESPACIO)
+                    </button>
+
+                    <button class="btn" onclick="generarReporte()">
+                        📸 GENERAR REPORTE INSTAGRAM
+                    </button>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <h2>📊 Estadísticas</h2>
+
+                <div class="stats">
+                    <div class="stat-box stat-aciertos">
+                        <div class="stat-value" id="aciertosCount">0</div>
+                        <div class="stat-label">Aciertos</div>
+                    </div>
+                    <div class="stat-box stat-errores">
+                        <div class="stat-value" id="erroresCount">0</div>
+                        <div class="stat-label">Errores</div>
+                    </div>
+                </div>
+
+                <h2>📋 Historial</h2>
+                <div class="historial" id="historialContainer">
+                    <p style="text-align: center; opacity: 0.5;">No hay detecciones aún</p>
+                </div>
+
+                <h2>🖼️ Capturas Recientes</h2>
+                <div class="capturas-grid" id="capturasGrid">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación -->
+    <div id="modalConfirm">
+        <div class="modal-content">
+            <h2>¿Es correcto?</h2>
+            <p>Color detectado: <strong id="modalColorName"></strong></p>
+            <div id="modalColorPreview" style="text-align: center; margin: 20px 0;">
+                <div class="color-preview" id="colorPreviewCircle"></div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-yes" onclick="confirmarDeteccion(true)">✓ SÍ</button>
+                <button class="btn-no" onclick="confirmarDeteccion(false)">✗ NO</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let video;
+        let canvas;
+        let ctx;
+        let historial = [];
+        let capturas = [];
+        let clickTimes = [];
+        let mediaRecorder;
+        let audioChunks = [];
+        let currentDetection = null;
+
+        // Colores conocidos en RGB
+        const coloresConocidos = {
+            'Rojo': { r: 255, g: 0, b: 0, hex: '#FF0000' },
+            'Naranja': { r: 255, g: 127, b: 0, hex: '#FF7F00' },
+            'Amarillo': { r: 255, g: 255, b: 0, hex: '#FFFF00' },
+            'Verde': { r: 0, g: 255, b: 0, hex: '#00FF00' },
+            'Cian': { r: 0, g: 255, b: 255, hex: '#00FFFF' },
+            'Azul': { r: 0, g: 0, b: 255, hex: '#0000FF' },
+            'Violeta': { r: 127, g: 0, b: 255, hex: '#7F00FF' },
+            'Rosa': { r: 255, g: 0, b: 255, hex: '#FF00FF' },
+            'Blanco': { r: 255, g: 255, b: 255, hex: '#FFFFFF' },
+            'Negro': { r: 0, g: 0, b: 0, hex: '#000000' },
+            'Gris': { r: 128, g: 128, b: 128, hex: '#808080' },
+            'Marrón': { r: 139, g: 69, b: 19, hex: '#8B4513' }
+        };
+
+        // Inicializar
+        window.onload = function() {
+            video = document.getElementById('videoElement');
+            canvas = document.getElementById('canvas');
+            ctx = canvas.getContext('2d');
+
+            // Iniciar webcam
+            iniciarWebcam();
+
+            // Event listeners
+            document.addEventListener('keydown', handleKeyPress);
+        };
+
+        async function iniciarWebcam() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    },
+                    audio: false
+                });
+                video.srcObject = stream;
+            } catch (err) {
+                console.error('Error al acceder a la webcam:', err);
+                alert('Error: No se puede acceder a la webcam. Por favor, permite el acceso.');
+            }
+        }
+
+        function handleKeyPress(e) {
+            if (e.code === 'Space') {
+                e.preventDefault();
+
+                const now = Date.now();
+                clickTimes.push(now);
+                clickTimes = clickTimes.filter(t => now - t < 2000);
+
+                if (clickTimes.length >= 3) {
+                    clickTimes = [];
+                    iniciarGrabacionAudio();
+                } else {
+                    detectarColor();
+                }
+            }
+        }
+
+        function detectarColor() {
+            // Capturar frame del video
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
+
+            // Obtener región central
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const roiSize = 50;
+
+            const imageData = ctx.getImageData(
+                centerX - roiSize,
+                centerY - roiSize,
+                roiSize * 2,
+                roiSize * 2
+            );
+
+            // Calcular color promedio
+            let r = 0, g = 0, b = 0;
+            const pixels = imageData.data.length / 4;
+
+            for (let i = 0; i < imageData.data.length; i += 4) {
+                r += imageData.data[i];
+                g += imageData.data[i + 1];
+                b += imageData.data[i + 2];
+            }
+
+            r = Math.round(r / pixels);
+            g = Math.round(g / pixels);
+            b = Math.round(b / pixels);
+
+            // Identificar color más cercano
+            const colorDetectado = identificarColor(r, g, b);
+            const hexColor = rgbToHex(r, g, b);
+
+            // Capturar miniatura
+            const thumbnail = capturarMiniatura();
+
+            // Guardar detección temporal
+            currentDetection = {
+                color: colorDetectado,
+                hex: hexColor,
+                rgb: { r, g, b },
+                thumbnail: thumbnail,
+                timestamp: new Date()
+            };
+
+            // Mostrar modal de confirmación
+            mostrarModalConfirmacion(colorDetectado, hexColor);
+        }
+
+        function identificarColor(r, g, b) {
+            let minDistance = Infinity;
+            let colorIdentificado = 'Desconocido';
+
+            // Calcular saturación y brillo
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            const saturation = max === 0 ? 0 : (max - min) / max;
+            const brightness = max / 255;
+
+            // Blanco, negro o gris
+            if (saturation < 0.2) {
+                if (brightness > 0.8) return 'Blanco';
+                if (brightness < 0.2) return 'Negro';
+                return 'Gris';
+            }
+
+            // Buscar color más cercano
+            for (const [nombre, color] of Object.entries(coloresConocidos)) {
+                if (nombre === 'Blanco' || nombre === 'Negro' || nombre === 'Gris') continue;
+
+                const distance = Math.sqrt(
+                    Math.pow(r - color.r, 2) +
+                    Math.pow(g - color.g, 2) +
+                    Math.pow(b - color.b, 2)
+                );
+
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    colorIdentificado = nombre;
+                }
+            }
+
+            return colorIdentificado;
+        }
+
+        function rgbToHex(r, g, b) {
+            return '#' + [r, g, b].map(x => {
+                const hex = x.toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            }).join('');
+        }
+
+        function capturarMiniatura() {
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = 160;
+            tempCanvas.height = 120;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.drawImage(video, 0, 0, 160, 120);
+            return tempCanvas.toDataURL('image/jpeg', 0.7);
+        }
+
+        function mostrarModalConfirmacion(color, hex) {
+            document.getElementById('modalColorName').textContent = color;
+            document.getElementById('colorPreviewCircle').style.backgroundColor = hex;
+            document.getElementById('modalConfirm').style.display = 'flex';
+        }
+
+        function confirmarDeteccion(esCorrecto) {
+            document.getElementById('modalConfirm').style.display = 'none';
+
+            if (!currentDetection) return;
+
+            const resultado = esCorrecto ? 'ACIERTO' : 'ERROR';
+
+            const entrada = {
+                timestamp: currentDetection.timestamp,
+                color: currentDetection.color,
+                hex: currentDetection.hex,
+                rgb: currentDetection.rgb,
+                resultado: resultado,
+                thumbnail: currentDetection.thumbnail
+            };
+
+            historial.push(entrada);
+            capturas.push(entrada);
+
+            actualizarInterfaz();
+
+            // Mostrar feedback
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.textContent = resultado === 'ACIERTO' ? '✓ Correcto!' : '✗ Error';
+            statusDiv.className = resultado === 'ACIERTO' ? 'status-success' : '';
+            statusDiv.style.background = resultado === 'ACIERTO' ? '#00aa00' : '#cc0000';
+
+            setTimeout(() => {
+                statusDiv.textContent = '';
+                statusDiv.style.background = '';
+            }, 2000);
+
+            // Reproducir sonido
+            reproducirBeep(resultado === 'ACIERTO' ? 800 : 400, 0.2);
+
+            currentDetection = null;
+        }
+
+        function actualizarInterfaz() {
+            // Actualizar estadísticas
+            const aciertos = historial.filter(h => h.resultado === 'ACIERTO').length;
+            const errores = historial.filter(h => h.resultado === 'ERROR').length;
+
+            document.getElementById('aciertosCount').textContent = aciertos;
+            document.getElementById('erroresCount').textContent = errores;
+
+            // Actualizar historial
+            const historialContainer = document.getElementById('historialContainer');
+            historialContainer.innerHTML = '';
+
+            [...historial].reverse().forEach(entrada => {
+                const item = document.createElement('div');
+                item.className = `historial-item ${entrada.resultado === 'ACIERTO' ? 'acierto' : 'error'}`;
+
+                const time = entrada.timestamp.toLocaleTimeString('es-ES');
+                item.innerHTML = `
+                    <div class="time">${time}</div>
+                    <div class="color">
+                        <span class="color-preview" style="
+                            width: 20px;
+                            height: 20px;
+                            background: ${entrada.hex};
+                            display: inline-block;
+                            border-radius: 50%;
+                            margin-right: 8px;
+                            vertical-align: middle;
+                            border: 2px solid white;
+                        "></span>
+                        ${entrada.color}
+                    </div>
+                    <div class="resultado">${entrada.resultado}</div>
+                `;
+                historialContainer.appendChild(item);
+            });
+
+            // Actualizar capturas (últimas 9)
+            const capturasGrid = document.getElementById('capturasGrid');
+            capturasGrid.innerHTML = '';
+
+            const recentCapturas = capturas.slice(-9).reverse();
+            recentCapturas.forEach(captura => {
+                const div = document.createElement('div');
+                div.className = `captura-mini ${captura.resultado === 'ACIERTO' ? 'acierto' : 'error'}`;
+                div.innerHTML = `<img src="${captura.thumbnail}" alt="${captura.color}">`;
+                capturasGrid.appendChild(div);
+            });
+        }
+
+        async function iniciarGrabacionAudio() {
+            try {
+                const statusDiv = document.getElementById('statusMessage');
+                statusDiv.textContent = '🔴 GRABANDO AUDIO (10s)...';
+                statusDiv.className = 'status-recording';
+
+                reproducirBeep(440, 0.2);
+
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+
+                    // Descargar audio
+                    const a = document.createElement('a');
+                    a.href = audioUrl;
+                    a.download = `audio_${Date.now()}.wav`;
+                    a.click();
+
+                    statusDiv.textContent = '✓ Audio guardado';
+                    statusDiv.className = 'status-success';
+                    reproducirBeep(880, 0.2);
+
+                    setTimeout(() => {
+                        statusDiv.textContent = '';
+                        statusDiv.className = '';
+                    }, 2000);
+
+                    stream.getTracks().forEach(track => track.stop());
+                };
+
+                mediaRecorder.start();
+
+                setTimeout(() => {
+                    mediaRecorder.stop();
+                }, 10000);
+
+            } catch (err) {
+                console.error('Error al grabar audio:', err);
+                alert('Error: No se puede acceder al micrófono.');
+            }
+        }
+
+        function reproducirBeep(frecuencia, duracion) {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.frequency.value = frecuencia;
+            oscillator.type = 'sine';
+
+            gainNode.gain.value = 0.3;
+
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duracion);
+        }
+
+        function generarReporte() {
+            if (historial.length === 0) {
+                alert('No hay datos para generar el reporte. Realiza algunas detecciones primero.');
+                return;
+            }
+
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.textContent = 'Generando reporte...';
+
+            setTimeout(() => {
+                crearReporteInstagram();
+            }, 100);
+        }
+
+        function crearReporteInstagram() {
+            // Crear canvas para reporte 9:16
+            const reportCanvas = document.createElement('canvas');
+            reportCanvas.width = 1080;
+            reportCanvas.height = 1920;
+            const rCtx = reportCanvas.getContext('2d');
+
+            // Fondo
+            const gradient = rCtx.createLinearGradient(0, 0, 0, 1920);
+            gradient.addColorStop(0, '#1a1a1a');
+            gradient.addColorStop(1, '#2d2d2d');
+            rCtx.fillStyle = gradient;
+            rCtx.fillRect(0, 0, 1080, 1920);
+
+            // Título
+            rCtx.fillStyle = '#FF1493';
+            rCtx.fillRect(0, 0, 1080, 250);
+
+            rCtx.fillStyle = 'white';
+            rCtx.font = 'bold 80px Arial';
+            rCtx.textAlign = 'center';
+            rCtx.fillText('ACADEMIA CORTEX', 540, 120);
+
+            rCtx.font = '40px Arial';
+            rCtx.fillText('Detector de Colores', 540, 180);
+
+            // Línea decorativa
+            rCtx.fillStyle = '#FFD700';
+            rCtx.fillRect(100, 240, 880, 10);
+
+            // Estadísticas
+            const aciertos = historial.filter(h => h.resultado === 'ACIERTO').length;
+            const errores = historial.filter(h => h.resultado === 'ERROR').length;
+            const total = historial.length;
+            const porcentajeAciertos = Math.round((aciertos / total) * 100);
+
+            rCtx.fillStyle = 'white';
+            rCtx.font = 'bold 50px Arial';
+            rCtx.fillText('ESTADÍSTICAS', 540, 340);
+
+            rCtx.font = '40px Arial';
+            rCtx.fillText(`Total de detecciones: ${total}`, 540, 420);
+
+            rCtx.fillStyle = '#00ff00';
+            rCtx.fillText(`✓ Aciertos: ${aciertos} (${porcentajeAciertos}%)`, 540, 490);
+
+            rCtx.fillStyle = '#ff4444';
+            rCtx.fillText(`✗ Errores: ${errores} (${100-porcentajeAciertos}%)`, 540, 560);
+
+            // Miniaturas
+            rCtx.fillStyle = 'white';
+            rCtx.font = 'bold 45px Arial';
+            rCtx.fillText('ÚLTIMAS DETECCIONES', 540, 670);
+
+            const thumbWidth = 240;
+            const thumbHeight = 180;
+            const padding = 30;
+            const startX = (1080 - (3 * thumbWidth + 2 * padding)) / 2;
+            let y = 730;
+
+            const recentImages = capturas.slice(-12);
+
+            recentImages.forEach((captura, idx) => {
+                const row = Math.floor(idx / 3);
+                const col = idx % 3;
+                const x = startX + col * (thumbWidth + padding);
+                const yPos = y + row * (thumbHeight + padding);
+
+                // Cargar y dibujar imagen
+                const img = new Image();
+                img.src = captura.thumbnail;
+                img.onload = function() {
+                    rCtx.drawImage(img, x, yPos, thumbWidth, thumbHeight);
+
+                    // Borde
+                    rCtx.strokeStyle = captura.resultado === 'ACIERTO' ? '#00ff00' : '#ff4444';
+                    rCtx.lineWidth = 6;
+                    rCtx.strokeRect(x, yPos, thumbWidth, thumbHeight);
+
+                    // Si es la última imagen, generar descarga
+                    if (idx === recentImages.length - 1) {
+                        finalizarReporte();
+                    }
+                };
+            });
+
+            function finalizarReporte() {
+                // Pie de página
+                const now = new Date();
+                const fechaHora = now.toLocaleString('es-ES');
+
+                rCtx.fillStyle = '#FF1493';
+                rCtx.fillRect(100, 1750, 880, 5);
+
+                rCtx.fillStyle = '#888888';
+                rCtx.font = '30px Arial';
+                rCtx.fillText(`Generado: ${fechaHora}`, 540, 1810);
+
+                // Descargar imagen
+                reportCanvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `reporte_instagram_${Date.now()}.jpg`;
+                    a.click();
+
+                    const statusDiv = document.getElementById('statusMessage');
+                    statusDiv.textContent = '✓ Reporte descargado!';
+                    statusDiv.className = 'status-success';
+
+                    setTimeout(() => {
+                        statusDiv.textContent = '';
+                        statusDiv.className = '';
+                    }, 3000);
+                }, 'image/jpeg', 0.95);
+            }
+
+            // Si no hay capturas, finalizar inmediatamente
+            if (recentImages.length === 0) {
+                finalizarReporte();
+            }
+        }
+    </script>
+</body>
+</html>

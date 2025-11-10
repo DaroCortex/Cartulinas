@@ -2,6 +2,30 @@
 
 Programa interactivo para detectar colores usando la webcam con funcionalidades avanzadas de grabación de audio y generación de reportes para Instagram.
 
+## 🚀 Inicio Rápido (Sin Instalación)
+
+### ✨ Versión Web - ¡Usa directamente desde tu navegador!
+
+**La forma más fácil de usar el programa:**
+
+1. **Abre el archivo `index.html`** en tu navegador
+   - Descarga el archivo y haz doble clic, o
+   - Usa GitHub Pages (si está habilitado)
+
+2. **Permite el acceso a la webcam** cuando te lo pida
+
+3. **¡Listo!** Ya puedes detectar colores
+
+📖 **[Ver instrucciones detalladas](COMO_USAR.md)**
+
+---
+
+## 💻 Versión Python (Avanzada)
+
+Si prefieres la versión de escritorio con Python, ve a la sección [Instalación](#instalación) más abajo.
+
+---
+
 ## Características
 
 - **Detección de colores en tiempo real** con alta sensibilidad
