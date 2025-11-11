@@ -368,7 +368,7 @@
             padding: 35px;
             border-radius: 8px;
             text-align: center;
-            max-width: 500px;
+            max-width: 600px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.6);
             border: 1px solid #2a5a7a;
         }
@@ -458,6 +458,48 @@
         .permission-icon {
             font-size: 3em;
         }
+
+        input[type="text"], input[type="number"] {
+            background: #141a1f;
+            border: 1px solid #2a5a7a;
+            color: #e8eaed;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 1.1em;
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #4a9eff;
+        }
+
+        .calibration-step {
+            background: #141a1f;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 3px solid #4a9eff;
+        }
+
+        .calibration-step h3 {
+            color: #4a9eff;
+            margin-bottom: 10px;
+        }
+
+        .color-sample {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 5px;
+            border: 2px solid #2a5a7a;
+        }
+
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -478,8 +520,8 @@
                 <div class="controls">
                     <div class="instructions">
                         <p><strong>ESPACIO</strong> - Detectar color (voz automática)</p>
+                        <p><strong>S</strong> - Confirmar Sí | <strong>N</strong> - Confirmar No</p>
                         <p><strong>ESPACIO x3</strong> - Grabar audio 5 segundos</p>
-                        <p>Centra el objeto en el círculo azul</p>
                     </div>
 
                     <div id="colorDisplay">
@@ -512,8 +554,13 @@
                     </div>
                 </div>
 
+                <h2>Colores Configurados</h2>
+                <div class="historial" id="coloresConfigurados">
+                    <p style="text-align: center; color: #6c7a89;">No hay colores configurados</p>
+                </div>
+
                 <h2>Historial</h2>
-                <div class="historial" id="historialContainer">
+                <div class="historial" id="historialContainer" style="max-height: 200px;">
                     <p style="text-align: center; color: #6c7a89;">No hay detecciones aún</p>
                 </div>
 
@@ -540,17 +587,45 @@
         </div>
     </div>
 
-    <!-- Modal de confirmación -->
-    <div id="modalConfirm" class="modal">
+    <!-- Modal de configuración de colores -->
+    <div id="modalConfiguracion" class="modal">
         <div class="modal-content">
-            <h2>¿Es correcto?</h2>
-            <p>Color detectado: <strong id="modalColorName"></strong></p>
-            <div id="modalColorPreview" style="text-align: center; margin: 20px 0;">
-                <div class="color-preview" id="colorPreviewCircle"></div>
+            <h2>Configuración de Colores</h2>
+
+            <div id="stepCantidad">
+                <p>¿Cuántos colores diferentes vas a usar?</p>
+                <input type="number" id="cantidadColores" min="2" max="12" value="6"
+                       style="text-align: center; font-size: 1.5em;">
+                <button class="btn btn-primary" onclick="iniciarCalibracion()" style="margin-top: 15px;">
+                    Siguiente
+                </button>
             </div>
-            <div class="modal-buttons">
-                <button class="btn-yes" onclick="confirmarDeteccion(true)">✓ SÍ</button>
-                <button class="btn-no" onclick="confirmarDeteccion(false)">✗ NO</button>
+
+            <div id="stepCalibracion" class="hidden">
+                <div class="calibration-step">
+                    <h3 id="calibracionTitulo">Color 1</h3>
+                    <p id="calibracionInstruccion">Coloca el objeto frente a la cámara</p>
+                    <div id="muestrasCapturadas" style="margin: 15px 0;">
+                        <p style="font-size: 0.9em; color: #6c7a89;">Muestras capturadas: <span id="contadorMuestras">0/3</span></p>
+                        <div id="muestrasPreview"></div>
+                    </div>
+                    <p style="font-size: 0.9em; color: #9aa0a6;">Presiona ESPACIO 3 veces para capturar diferentes ángulos</p>
+                </div>
+
+                <div id="stepNombre" class="hidden">
+                    <p>¿Cómo se llama este color?</p>
+                    <input type="text" id="nombreColor" placeholder="Ej: Rojo, Azul, Verde...">
+                    <button class="btn btn-primary" onclick="guardarColor()" style="margin-top: 10px;">
+                        Guardar Color
+                    </button>
+                </div>
+            </div>
+
+            <div id="stepFinalizar" class="hidden">
+                <p>✓ Todos los colores configurados correctamente</p>
+                <button class="btn btn-primary" onclick="finalizarConfiguracion()" style="margin-top: 15px;">
+                    Comenzar a Detectar
+                </button>
             </div>
         </div>
     </div>
@@ -569,21 +644,16 @@
         let audioStream = null;
         let permisosOtorgados = false;
 
-        // Colores conocidos en RGB
-        const coloresConocidos = {
-            'Rojo': { r: 255, g: 0, b: 0, hex: '#FF0000' },
-            'Naranja': { r: 255, g: 127, b: 0, hex: '#FF7F00' },
-            'Amarillo': { r: 255, g: 255, b: 0, hex: '#FFFF00' },
-            'Verde': { r: 0, g: 255, b: 0, hex: '#00FF00' },
-            'Cian': { r: 0, g: 255, b: 255, hex: '#00FFFF' },
-            'Azul': { r: 0, g: 0, b: 255, hex: '#0000FF' },
-            'Violeta': { r: 127, g: 0, b: 255, hex: '#7F00FF' },
-            'Rosa': { r: 255, g: 0, b: 255, hex: '#FF00FF' },
-            'Blanco': { r: 255, g: 255, b: 255, hex: '#FFFFFF' },
-            'Negro': { r: 0, g: 0, b: 0, hex: '#000000' },
-            'Gris': { r: 128, g: 128, b: 128, hex: '#808080' },
-            'Marrón': { r: 139, g: 69, b: 19, hex: '#8B4513' }
+        // Sistema de calibración
+        let coloresCalibre = [];
+        let calibracionActual = {
+            indice: 0,
+            muestras: [],
+            totalColores: 0
         };
+
+        // Estado de confirmación
+        let esperandoConfirmacion = false;
 
         // Inicializar
         window.onload = function() {
@@ -597,7 +667,6 @@
 
         async function solicitarPermisos() {
             try {
-                // Solicitar cámara y micrófono juntos
                 const videoStream = await navigator.mediaDevices.getUserMedia({
                     video: {
                         width: { ideal: 1280 },
@@ -613,21 +682,223 @@
                 video.srcObject = videoStream;
                 permisosOtorgados = true;
 
-                // Cerrar modal
+                // Cerrar modal de permisos y abrir configuración
                 document.getElementById('modalPermisos').style.display = 'none';
+                document.getElementById('modalConfiguracion').style.display = 'flex';
+
+                // Decir instrucciones
+                decirTexto('Bienvenido al detector de colores. Primero vamos a configurar los colores que vas a usar. ¿Cuántos colores diferentes necesitas?');
 
             } catch (err) {
                 console.error('Error al solicitar permisos:', err);
-                alert('Error: Necesitamos acceso a la cámara y micrófono para funcionar. Por favor, permite el acceso y recarga la página.');
+                alert('Error: Necesitamos acceso a la cámara y micrófono para funcionar.');
             }
         }
 
+        function iniciarCalibracion() {
+            const cantidad = parseInt(document.getElementById('cantidadColores').value);
+
+            if (cantidad < 2 || cantidad > 12) {
+                decirTexto('Por favor, elige entre 2 y 12 colores');
+                return;
+            }
+
+            calibracionActual.totalColores = cantidad;
+            calibracionActual.indice = 0;
+            calibracionActual.muestras = [];
+
+            document.getElementById('stepCantidad').classList.add('hidden');
+            document.getElementById('stepCalibracion').classList.remove('hidden');
+
+            siguienteColorCalibracion();
+        }
+
+        function siguienteColorCalibracion() {
+            calibracionActual.muestras = [];
+            actualizarVisualizacionCalibracion();
+
+            const numeroColor = calibracionActual.indice + 1;
+            const mensaje = `Color número ${numeroColor}. Coloca el objeto frente a la cámara en el círculo azul y presiona la barra espaciadora 3 veces para capturar desde diferentes ángulos.`;
+
+            decirTexto(mensaje);
+        }
+
+        function capturarMuestraColor() {
+            if (calibracionActual.muestras.length >= 3) {
+                // Ya tenemos 3 muestras, pedir nombre
+                document.getElementById('stepNombre').classList.remove('hidden');
+                decirTexto('Perfecto. Ahora dime, ¿cómo se llama este color?');
+                setTimeout(() => {
+                    document.getElementById('nombreColor').focus();
+                }, 500);
+                return;
+            }
+
+            // Capturar frame
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
+
+            // Obtener color promedio
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const roiSize = 50;
+
+            const imageData = ctx.getImageData(
+                centerX - roiSize,
+                centerY - roiSize,
+                roiSize * 2,
+                roiSize * 2
+            );
+
+            let r = 0, g = 0, b = 0;
+            const pixels = imageData.data.length / 4;
+
+            for (let i = 0; i < imageData.data.length; i += 4) {
+                r += imageData.data[i];
+                g += imageData.data[i + 1];
+                b += imageData.data[i + 2];
+            }
+
+            r = Math.round(r / pixels);
+            g = Math.round(g / pixels);
+            b = Math.round(b / pixels);
+
+            calibracionActual.muestras.push({ r, g, b });
+
+            // Reproducir beep de confirmación
+            reproducirBeep(600, 0.1);
+
+            actualizarVisualizacionCalibracion();
+
+            const restantes = 3 - calibracionActual.muestras.length;
+            if (restantes > 0) {
+                decirTexto(`Capturado. ${restantes} más.`);
+            }
+        }
+
+        function actualizarVisualizacionCalibracion() {
+            const numeroColor = calibracionActual.indice + 1;
+            document.getElementById('calibracionTitulo').textContent = `Color ${numeroColor} de ${calibracionActual.totalColores}`;
+            document.getElementById('contadorMuestras').textContent = `${calibracionActual.muestras.length}/3`;
+
+            const preview = document.getElementById('muestrasPreview');
+            preview.innerHTML = '';
+
+            calibracionActual.muestras.forEach(muestra => {
+                const div = document.createElement('div');
+                div.className = 'color-sample';
+                div.style.backgroundColor = `rgb(${muestra.r}, ${muestra.g}, ${muestra.b})`;
+                preview.appendChild(div);
+            });
+        }
+
+        function guardarColor() {
+            const nombre = document.getElementById('nombreColor').value.trim();
+
+            if (!nombre) {
+                decirTexto('Por favor, escribe un nombre para el color');
+                return;
+            }
+
+            // Calcular color promedio de las 3 muestras
+            let r = 0, g = 0, b = 0;
+            calibracionActual.muestras.forEach(m => {
+                r += m.r;
+                g += m.g;
+                b += m.b;
+            });
+
+            r = Math.round(r / calibracionActual.muestras.length);
+            g = Math.round(g / calibracionActual.muestras.length);
+            b = Math.round(b / calibracionActual.muestras.length);
+
+            const hex = rgbToHex(r, g, b);
+
+            coloresCalibre.push({
+                nombre: nombre,
+                r: r,
+                g: g,
+                b: b,
+                hex: hex,
+                muestras: calibracionActual.muestras
+            });
+
+            decirTexto(`Color ${nombre} guardado correctamente.`);
+            reproducirBeep(800, 0.2);
+
+            // Limpiar input
+            document.getElementById('nombreColor').value = '';
+            document.getElementById('stepNombre').classList.add('hidden');
+
+            // Siguiente color o finalizar
+            calibracionActual.indice++;
+
+            if (calibracionActual.indice < calibracionActual.totalColores) {
+                siguienteColorCalibracion();
+            } else {
+                // Calibración completa
+                document.getElementById('stepCalibracion').classList.add('hidden');
+                document.getElementById('stepFinalizar').classList.remove('hidden');
+
+                const mensaje = `Excelente. Configuraste ${coloresCalibre.length} colores: ${coloresCalibre.map(c => c.nombre).join(', ')}. Presiona comenzar a detectar cuando estés listo.`;
+                decirTexto(mensaje);
+            }
+        }
+
+        function finalizarConfiguracion() {
+            document.getElementById('modalConfiguracion').style.display = 'none';
+
+            // Actualizar lista de colores configurados
+            actualizarColoresConfigurados();
+
+            decirTexto('Sistema listo. Presiona la barra espaciadora para detectar colores.');
+        }
+
+        function actualizarColoresConfigurados() {
+            const container = document.getElementById('coloresConfigurados');
+            container.innerHTML = '';
+
+            coloresCalibre.forEach((color, index) => {
+                const item = document.createElement('div');
+                item.className = 'historial-item';
+                item.style.borderLeftColor = color.hex;
+                item.innerHTML = `
+                    <div class="color">
+                        <span class="color-preview" style="
+                            width: 20px;
+                            height: 20px;
+                            background: ${color.hex};
+                            display: inline-block;
+                            border-radius: 50%;
+                            margin-right: 8px;
+                            vertical-align: middle;
+                            border: 2px solid #2a5a7a;
+                        "></span>
+                        ${color.nombre}
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
         function handleKeyPress(e) {
-            if (e.code === 'Space') {
+            // Durante calibración
+            if (!document.getElementById('modalConfiguracion').classList.contains('hidden') &&
+                !document.getElementById('stepCalibracion').classList.contains('hidden') &&
+                document.getElementById('stepNombre').classList.contains('hidden')) {
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    capturarMuestraColor();
+                }
+                return;
+            }
+
+            // Durante detección normal
+            if (e.code === 'Space' && !esperandoConfirmacion) {
                 e.preventDefault();
 
-                if (!permisosOtorgados) {
-                    alert('Por favor, otorga los permisos primero.');
+                if (!permisosOtorgados || coloresCalibre.length === 0) {
                     return;
                 }
 
@@ -642,9 +913,25 @@
                     detectarColor();
                 }
             }
+
+            // Confirmación S/N
+            if (esperandoConfirmacion) {
+                if (e.key === 's' || e.key === 'S') {
+                    e.preventDefault();
+                    confirmarDeteccion(true);
+                } else if (e.key === 'n' || e.key === 'N') {
+                    e.preventDefault();
+                    confirmarDeteccion(false);
+                }
+            }
         }
 
         function detectarColor() {
+            if (coloresCalibre.length === 0) {
+                decirTexto('Primero debes configurar los colores');
+                return;
+            }
+
             // Capturar frame del video
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
@@ -676,66 +963,39 @@
             g = Math.round(g / pixels);
             b = Math.round(b / pixels);
 
-            // Identificar color más cercano
-            const colorDetectado = identificarColor(r, g, b);
+            // Identificar color comparando con calibración
+            const colorDetectado = identificarColorCalibrado(r, g, b);
             const hexColor = rgbToHex(r, g, b);
 
             // DECIR EL COLOR EN VOZ ALTA
-            decirColorEnVozAlta(colorDetectado);
+            decirTexto(`${colorDetectado.nombre}. Presiona S para sí, o N para no.`);
 
             // Capturar miniatura
             const thumbnail = capturarMiniatura();
 
             // Guardar detección temporal
             currentDetection = {
-                color: colorDetectado,
-                hex: hexColor,
+                color: colorDetectado.nombre,
+                hex: colorDetectado.hex,
                 rgb: { r, g, b },
                 thumbnail: thumbnail,
                 timestamp: new Date(),
                 audio: null
             };
 
-            // Mostrar modal de confirmación
-            mostrarModalConfirmacion(colorDetectado, hexColor);
+            // Actualizar display
+            document.getElementById('colorDisplay').textContent = colorDetectado.nombre;
+            document.getElementById('colorDisplay').style.color = colorDetectado.hex;
+
+            // Esperar confirmación por teclado
+            esperandoConfirmacion = true;
         }
 
-        function decirColorEnVozAlta(color) {
-            if ('speechSynthesis' in window) {
-                // Cancelar cualquier voz anterior
-                window.speechSynthesis.cancel();
-
-                const utterance = new SpeechSynthesisUtterance(color);
-                utterance.lang = 'es-ES';
-                utterance.rate = 0.9;
-                utterance.pitch = 1;
-                utterance.volume = 1;
-
-                window.speechSynthesis.speak(utterance);
-            }
-        }
-
-        function identificarColor(r, g, b) {
+        function identificarColorCalibrado(r, g, b) {
             let minDistance = Infinity;
-            let colorIdentificado = 'Desconocido';
+            let colorIdentificado = coloresCalibre[0];
 
-            // Calcular saturación y brillo
-            const max = Math.max(r, g, b);
-            const min = Math.min(r, g, b);
-            const saturation = max === 0 ? 0 : (max - min) / max;
-            const brightness = max / 255;
-
-            // Blanco, negro o gris
-            if (saturation < 0.2) {
-                if (brightness > 0.8) return 'Blanco';
-                if (brightness < 0.2) return 'Negro';
-                return 'Gris';
-            }
-
-            // Buscar color más cercano
-            for (const [nombre, color] of Object.entries(coloresConocidos)) {
-                if (nombre === 'Blanco' || nombre === 'Negro' || nombre === 'Gris') continue;
-
+            coloresCalibre.forEach(color => {
                 const distance = Math.sqrt(
                     Math.pow(r - color.r, 2) +
                     Math.pow(g - color.g, 2) +
@@ -744,11 +1004,25 @@
 
                 if (distance < minDistance) {
                     minDistance = distance;
-                    colorIdentificado = nombre;
+                    colorIdentificado = color;
                 }
-            }
+            });
 
             return colorIdentificado;
+        }
+
+        function decirTexto(texto) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+
+                const utterance = new SpeechSynthesisUtterance(texto);
+                utterance.lang = 'es-ES';
+                utterance.rate = 0.9;
+                utterance.pitch = 1;
+                utterance.volume = 1;
+
+                window.speechSynthesis.speak(utterance);
+            }
         }
 
         function rgbToHex(r, g, b) {
@@ -767,14 +1041,8 @@
             return tempCanvas.toDataURL('image/jpeg', 0.7);
         }
 
-        function mostrarModalConfirmacion(color, hex) {
-            document.getElementById('modalColorName').textContent = color;
-            document.getElementById('colorPreviewCircle').style.backgroundColor = hex;
-            document.getElementById('modalConfirm').style.display = 'flex';
-        }
-
         function confirmarDeteccion(esCorrecto) {
-            document.getElementById('modalConfirm').style.display = 'none';
+            esperandoConfirmacion = false;
 
             if (!currentDetection) return;
 
@@ -795,7 +1063,10 @@
 
             actualizarInterfaz();
 
-            // Mostrar feedback
+            // Feedback de voz
+            decirTexto(resultado === 'ACIERTO' ? 'Correcto' : 'Error');
+
+            // Mostrar feedback visual
             const statusDiv = document.getElementById('statusMessage');
             statusDiv.textContent = resultado === 'ACIERTO' ? '✓ Correcto!' : '✗ Error';
             statusDiv.className = resultado === 'ACIERTO' ? 'status-success' : '';
@@ -811,6 +1082,8 @@
             reproducirBeep(resultado === 'ACIERTO' ? 800 : 400, 0.2);
 
             currentDetection = null;
+            document.getElementById('colorDisplay').textContent = 'Presiona ESPACIO para detectar';
+            document.getElementById('colorDisplay').style.color = '#e8eaed';
         }
 
         function actualizarInterfaz() {
@@ -851,7 +1124,7 @@
                 historialContainer.appendChild(item);
             });
 
-            // Actualizar capturas (últimas 9)
+            // Actualizar capturas
             const capturasGrid = document.getElementById('capturasGrid');
             capturasGrid.innerHTML = '';
 
@@ -870,6 +1143,7 @@
                 statusDiv.textContent = '🔴 GRABANDO AUDIO (5s)...';
                 statusDiv.className = 'status-recording';
 
+                decirTexto('Grabando');
                 reproducirBeep(440, 0.2);
 
                 mediaRecorder = new MediaRecorder(audioStream);
@@ -882,24 +1156,11 @@
                 mediaRecorder.onstop = () => {
                     const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
 
-                    // Guardar audio en la detección actual si existe
                     if (currentDetection) {
                         currentDetection.audio = audioBlob;
-                    } else {
-                        // Si no hay detección actual, crear una entrada solo con audio
-                        const entrada = {
-                            timestamp: new Date(),
-                            color: 'Audio grabado',
-                            hex: '#666666',
-                            rgb: { r: 102, g: 102, b: 102 },
-                            resultado: 'AUDIO',
-                            thumbnail: null,
-                            audio: audioBlob
-                        };
-                        historial.push(entrada);
                     }
 
-                    statusDiv.textContent = '✓ Audio guardado con la foto';
+                    statusDiv.textContent = '✓ Audio guardado';
                     statusDiv.className = 'status-success';
                     reproducirBeep(880, 0.2);
 
@@ -917,7 +1178,6 @@
 
             } catch (err) {
                 console.error('Error al grabar audio:', err);
-                alert('Error: No se puede acceder al micrófono.');
             }
         }
 
@@ -944,7 +1204,7 @@
 
         function generarReporte() {
             if (historial.length === 0) {
-                alert('No hay datos para generar el reporte. Realiza algunas detecciones primero.');
+                decirTexto('No hay datos para generar el reporte');
                 return;
             }
 
@@ -957,7 +1217,6 @@
         }
 
         function crearReporteInstagram() {
-            // Crear canvas para reporte 9:16
             const reportCanvas = document.createElement('canvas');
             reportCanvas.width = 1080;
             reportCanvas.height = 1920;
@@ -971,7 +1230,6 @@
             rCtx.fillStyle = '#1a1f26';
             rCtx.fillRect(0, 0, 1080, 220);
 
-            // Barra azul
             rCtx.fillStyle = '#2a5a7a';
             rCtx.fillRect(0, 220, 1080, 8);
 
@@ -996,7 +1254,7 @@
 
             rCtx.font = '38px Arial';
             rCtx.fillStyle = '#9aa0a6';
-            rCtx.fillText(`Total de detecciones: ${total}`, 540, 390);
+            rCtx.fillText(`Total: ${total} | Colores usados: ${coloresCalibre.length}`, 540, 390);
 
             rCtx.fillStyle = '#4caf50';
             rCtx.fillText(`✓ Aciertos: ${aciertos} (${porcentajeAciertos}%)`, 540, 450);
@@ -1023,18 +1281,15 @@
                 const x = startX + col * (thumbWidth + padding);
                 const yPos = y + row * (thumbHeight + padding);
 
-                // Cargar y dibujar imagen
                 const img = new Image();
                 img.src = captura.thumbnail;
                 img.onload = function() {
                     rCtx.drawImage(img, x, yPos, thumbWidth, thumbHeight);
 
-                    // Borde
                     rCtx.strokeStyle = captura.resultado === 'ACIERTO' ? '#4caf50' : '#ff6b6b';
                     rCtx.lineWidth = 4;
                     rCtx.strokeRect(x, yPos, thumbWidth, thumbHeight);
 
-                    // Indicador de audio
                     if (captura.audio) {
                         rCtx.fillStyle = '#2a5a7a';
                         rCtx.fillRect(x + thumbWidth - 35, yPos + 5, 30, 30);
@@ -1043,7 +1298,6 @@
                         rCtx.fillText('🎤', x + thumbWidth - 20, yPos + 25);
                     }
 
-                    // Si es la última imagen, generar descarga
                     if (idx === recentImages.length - 1) {
                         finalizarReporte();
                     }
@@ -1051,7 +1305,6 @@
             });
 
             function finalizarReporte() {
-                // Pie de página
                 const now = new Date();
                 const fechaHora = now.toLocaleString('es-ES');
 
@@ -1062,7 +1315,6 @@
                 rCtx.font = '28px Arial';
                 rCtx.fillText(`Generado: ${fechaHora}`, 540, 1840);
 
-                // Descargar imagen
                 reportCanvas.toBlob((blob) => {
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
@@ -1073,6 +1325,7 @@
                     const statusDiv = document.getElementById('statusMessage');
                     statusDiv.textContent = '✓ Reporte descargado';
                     statusDiv.className = 'status-success';
+                    decirTexto('Reporte descargado');
 
                     setTimeout(() => {
                         statusDiv.textContent = '';
@@ -1081,7 +1334,6 @@
                 }, 'image/jpeg', 0.95);
             }
 
-            // Si no hay capturas, finalizar inmediatamente
             if (recentImages.length === 0) {
                 finalizarReporte();
             }
